@@ -1,5 +1,5 @@
 {
-  "name": "sierracoffee---el-alma-de-la-sierra",
+  "name": "empanadas-creativas---arte-en-masa",
   "private": true,
   "version": "0.0.0",
   "type": "module",
@@ -9,11 +9,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "framer-motion": "^12.31.0",
-    "@google/genai": "^1.39.0",
-    "react": "^19.2.4",
-    "react-dom": "^19.2.4",
-    "lucide-react": "^0.563.0"
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
+    "framer-motion": "12.31.0",
+    "lucide-react": "0.463.0",
+    "@google/genai": "1.39.0"
   },
   "devDependencies": {
     "@types/node": "^22.14.0",

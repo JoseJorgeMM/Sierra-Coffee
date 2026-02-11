@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { Send, X, Coffee, Loader2, Sparkles } from 'lucide-react';
+import { Send, X, Utensils, Loader2, Sparkles } from 'lucide-react';
 import { ChatMessage, ChatRole } from '../types';
 import { sendMessageToGemini } from '../services/geminiService';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -9,7 +9,7 @@ export const AIChat: React.FC = () => {
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([
-    { role: ChatRole.MODEL, text: "Hola, soy tu experto de SierraCoffee. ¿En qué puedo ayudarte hoy?" }
+    { role: ChatRole.MODEL, text: "¡Hola! Soy tu Sommelier de Empanadas Creativas. ¿Buscas el maridaje perfecto o quieres conocer nuestro menú gourmet?" }
   ]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
 
@@ -46,7 +46,6 @@ export const AIChat: React.FC = () => {
 
   return (
     <>
-      {/* Floating Button */}
       <motion.button
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
@@ -57,7 +56,6 @@ export const AIChat: React.FC = () => {
         <Sparkles className="w-6 h-6" />
       </motion.button>
 
-      {/* Chat Window */}
       <AnimatePresence>
         {isOpen && (
           <motion.div
@@ -66,11 +64,10 @@ export const AIChat: React.FC = () => {
             exit={{ opacity: 0, y: 100, scale: 0.9 }}
             className="fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 w-[90vw] md:w-[400px] h-[500px] bg-coffee-900/95 backdrop-blur-md border border-gold-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden"
           >
-            {/* Header */}
             <div className="bg-coffee-800 p-4 flex justify-between items-center border-b border-gold-500/20">
               <div className="flex items-center gap-2">
-                <Coffee className="w-5 h-5 text-gold-500" />
-                <h3 className="font-serif text-lg text-gold-500">Sierra Sommelier AI</h3>
+                <Utensils className="w-5 h-5 text-gold-500" />
+                <h3 className="font-serif text-lg text-gold-500" style={{ color: '#D4AF37' }}>Empanada Sommelier AI</h3>
               </div>
               <button 
                 onClick={() => setIsOpen(false)}
@@ -80,7 +77,6 @@ export const AIChat: React.FC = () => {
               </button>
             </div>
 
-            {/* Messages Area */}
             <div className="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
               {messages.map((msg, index) => (
                 <div
@@ -102,14 +98,13 @@ export const AIChat: React.FC = () => {
                 <div className="flex justify-start">
                   <div className="bg-coffee-800 p-3 rounded-xl rounded-bl-none flex gap-2 items-center">
                     <Loader2 className="w-4 h-4 animate-spin text-gold-500" />
-                    <span className="text-xs text-coffee-300">Preparando respuesta...</span>
+                    <span className="text-xs text-coffee-300">Cocinando respuesta...</span>
                   </div>
                 </div>
               )}
               <div ref={messagesEndRef} />
             </div>
 
-            {/* Input Area */}
             <div className="p-4 bg-coffee-800/50 border-t border-gold-500/20">
               <div className="flex gap-2">
                 <input
@@ -117,7 +112,7 @@ export const AIChat: React.FC = () => {
                   value={input}
                   onChange={(e) => setInput(e.target.value)}
                   onKeyDown={handleKeyPress}
-                  placeholder="Pregunta sobre el tueste, origen..."
+                  placeholder="Ej: ¿Qué salsa me recomiendas para carne?"
                   className="flex-1 bg-coffee-900 border border-coffee-600 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-gold-500 transition-colors placeholder-coffee-400"
                 />
                 <button

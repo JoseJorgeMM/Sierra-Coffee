@@ -3,63 +3,62 @@ import { SlideContent } from './types';
 export const SLIDES: SlideContent[] = [
   {
     id: 1,
-    title: "SierraCoffee",
-    subtitle: "El Corazón del Mundo en una Taza",
-    description: "Descubre el secreto mejor guardado de Colombia. Café orgánico de altura cultivado en las místicas laderas de la Sierra Nevada de Santa Marta.",
-    image: "https://picsum.photos/1920/1080?grayscale&blur=2", // Abstract moody
+    title: "Empanadas Creativas",
+    subtitle: "El Sabor de la Innovación",
+    description: "Redefinimos el icono de la gastronomía colombiana. Masas artesanales, rellenos gourmet y una experiencia que deleita todos los sentidos.",
+    image: "https://images.unsplash.com/photo-1628102476629-f8c331bc5099?q=80&w=2070&auto=format&fit=crop", 
     align: 'center',
     theme: 'dark',
-    cta: "Iniciar El Viaje"
+    cta: "Explorar Sabores"
   },
   {
     id: 2,
-    title: "Origen Sagrado",
-    subtitle: "Sierra Nevada de Santa Marta",
-    description: "Cultivado a 1.800 metros sobre el nivel del mar, bajo la sombra de árboles nativos y bendecido por las aguas de los glaciares. Un ecosistema único que otorga notas de sabor inigualables.",
-    image: "https://picsum.photos/1920/1081", // Mountain vibe
+    title: "Masas de Autor",
+    subtitle: "Maíz, Trigo y Semillas",
+    description: "Desde la tradicional masa de maíz peto hasta innovaciones con chía, linaza y remolacha. Una textura crujiente por fuera y suave por dentro.",
+    image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop", 
     align: 'left',
     theme: 'dark'
   },
   {
     id: 3,
-    title: "Perfil de Taza",
-    subtitle: "Notas que Enamoran",
-    description: "Una experiencia sensorial compleja. Cuerpo medio-alto, acidez cítrica brillante, con profundas notas a chocolate oscuro, nueces tostadas y un final dulce a panela y frutos rojos.",
-    image: "https://picsum.photos/1920/1082", // Coffee beans vibe
+    title: "Rellenos Infinitos",
+    subtitle: "Gourmet en Cada Bocado",
+    description: "Carne desmechada al fuego lento, pollo en crema de champiñones, o nuestras opciones vegetarianas con quinoa y vegetales rostizados.",
+    image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=2070&auto=format&fit=crop", 
     align: 'right',
     theme: 'dark'
   },
   {
     id: 4,
-    title: "Compromiso Sostenible",
-    subtitle: "Más que Café, es Vida",
-    description: "Trabajamos mano a mano con las comunidades indígenas Arhuacas y Koguis. Respetamos la Madre Tierra con prácticas 100% orgánicas y comercio justo certificado.",
-    image: "https://picsum.photos/1920/1083", // Hands/Nature vibe
+    title: "Catering de Lujo",
+    subtitle: "Tu Evento, Nuestro Sabor",
+    description: "Llevamos la estación de empanadas más creativa de Colombia a tus eventos corporativos y celebraciones privadas. Un toque chic y delicioso.",
+    image: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2070&auto=format&fit=crop", 
     align: 'left',
     theme: 'dark'
   },
   {
     id: 5,
-    title: "Barista Virtual IA",
-    subtitle: "Expertise al Instante",
-    description: "¿Tienes dudas sobre cómo prepararlo? ¿Quieres saber más sobre nuestra trazabilidad? Pregúntale a nuestra IA experta en café colombiano.",
-    image: "https://picsum.photos/1920/1084", // Modern tech/coffee
+    title: "Sommelier de Sabores",
+    subtitle: "Asesoría Gastronómica IA",
+    description: "¿No sabes con qué salsa combinar tu empanada? Nuestra IA experta te sugiere el maridaje perfecto para una experiencia completa.",
+    image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?q=80&w=2070&auto=format&fit=crop", 
     align: 'center',
     theme: 'dark',
-    cta: "Chatear Ahora"
+    cta: "Consultar Sommelier"
   }
 ];
 
 export const SYSTEM_INSTRUCTION = `
-Eres 'SierraBot', un sommelier de café experto y apasionado de la marca SierraCoffee.
-Tu tono es profesional, cálido, evocador y sofisticado.
-SierraCoffee es un café de especialidad cultivado en la Sierra Nevada de Santa Marta, Colombia.
-Detalles clave:
-- Altura: 1800 msnm.
-- Notas: Chocolate, nuez, cítricos dulces.
-- Proceso: Lavado, secado al sol.
-- Impacto: Orgánico y apoya comunidades indígenas.
+Eres 'CreativaBot', un sommelier experto en empanadas de la marca 'Empanadas Creativas'.
+Tu tono es entusiasta, profesional, sofisticado y muy colombiano.
+Empanadas Creativas ofrece empanadas gourmet con masas innovadoras (maíz, semillas, remolacha) y rellenos de alta cocina.
 
-Responde preguntas sobre métodos de preparación (V60, Chemex, Espresso) recomendados para este perfil de taza.
-Mantén las respuestas concisas (máximo 80 palabras) pero ricas en vocabulario sensorial.
+Debes responder preguntas sobre:
+- Maridajes: Qué salsas (ají artesanal, suero costeño, chimichurri de la casa) van mejor con cada relleno.
+- Recomendaciones para eventos y catering.
+- Detalles sobre los tipos de masas artesanales.
+
+Mantén las respuestas concisas (máximo 80 palabras), apetitosas y elegantes.
 `;
