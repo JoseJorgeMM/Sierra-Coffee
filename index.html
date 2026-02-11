@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="es">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Empanadas Creativas | Sabores de Colombia</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+      tailwind.config = {
+        theme: {
+          extend: {
+            colors: {
+              coffee: {
+                900: '#2A1A14', // Dark Roast
+                800: '#3E2723',
+                700: '#4E342E',
+                600: '#5D4037',
+                500: '#795548', // Medium
+                400: '#8D6E63',
+                300: '#A1887F',
+                200: '#BCAAA4', // Crema
+                100: '#D7CCC8',
+                50: '#EFEBE9',
+              },
+              nature: {
+                900: '#1B5E20', // Sierra foliage
+                800: '#2E7D32',
+              },
+              gold: {
+                500: '#C5A059', // Premium accent
+                400: '#D4AF37',
+              }
+            },
+            fontFamily: {
+              serif: ['"Playfair Display"', 'serif'],
+              sans: ['"Lato"', 'sans-serif'],
+            },
+          },
+        },
+      }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
+  <script type="importmap">
+{
+  "imports": {
+    "framer-motion": "https://esm.sh/framer-motion@^12.31.0",
+    "@google/genai": "https://esm.sh/@google/genai@^1.39.0",
+    "react/": "https://esm.sh/react@^19.2.4/",
+    "react": "https://esm.sh/react@^19.2.4",
+    "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
+    "lucide-react": "https://esm.sh/lucide-react@^0.563.0"
+  }
+}
+</script>
+</head>
+  <body class="bg-coffee-900 text-white overflow-hidden">
+    <div id="root"></div>
+  </body>
+</html>
