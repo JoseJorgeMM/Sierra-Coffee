@@ -550,7 +550,7 @@
                 const apiKey = process.env.GEMINI_API_KEY || "";
                 const ai = new GoogleGenAI({ apiKey });
 
-                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 24000 });
                 
                 liveSession = await ai.live.connect({
                     model: "gemini-2.5-flash-native-audio-preview-12-2025",
@@ -614,7 +614,7 @@
                     // Convert to Base64
                     const base64Data = btoa(String.fromCharCode(...new Uint8Array(pcmData.buffer)));
                     liveSession.sendRealtimeInput({
-                        audio: { data: base64Data, mimeType: 'audio/pcm;rate=16000' }
+                        audio: { data: base64Data, mimeType: 'audio/pcm;rate=24000' }
                     });
 
                     // Visualizer effect
@@ -656,7 +656,7 @@
 
             isPlaying = true;
             const data = audioQueue.shift();
-            const buffer = audioContext.createBuffer(1, data.length, 16000);
+            const buffer = audioContext.createBuffer(1, data.length, 24000);
             buffer.getChannelData(0).set(data);
 
             const source = audioContext.createBufferSource();
