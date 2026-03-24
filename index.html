@@ -276,7 +276,7 @@
 
     <!-- Scripts -->
     <script type="module">
-        import { GoogleGenAI } from "https://esm.sh/@google/genai@1.39.0";
+        import { GoogleGenAI } from "@google/genai";
 
         const SLIDES = [
             {
@@ -558,7 +558,7 @@
                         systemInstruction: VOICE_SYSTEM_INSTRUCTION,
                         responseModalities: ["AUDIO"],
                         speechConfig: {
-                            voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } }
+                            voiceConfig: { prebuiltVoiceConfig: { voiceName: "Leda" } }
                         }
                     },
                     callbacks: {
@@ -628,7 +628,7 @@
         }
 
         const audioQueue = [];
-        let isPlaying = false;
+        let nextStartTime = 0;
 
         function playAudioChunk(base64Data) {
             const binaryString = atob(base64Data);
@@ -645,30 +645,35 @@
             }
 
             audioQueue.push(floatData);
-            if (!isPlaying) processAudioQueue();
+            schedulePlayback();
         }
 
-        async function processAudioQueue() {
-            if (audioQueue.length === 0) {
-                isPlaying = false;
-                return;
+        function schedulePlayback() {
+            if (!audioContext) return;
+            
+            while (audioQueue.length > 0) {
+                const data = audioQueue.shift();
+                const buffer = audioContext.createBuffer(1, data.length, 24000);
+                buffer.getChannelData(0).set(data);
+
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+
+                const currentTime = audioContext.currentTime;
+                if (nextStartTime < currentTime) {
+                    nextStartTime = currentTime + 0.1; // Buffer de 100ms para evitar cortes
+                }
+
+                source.start(nextStartTime);
+                nextStartTime += buffer.duration;
             }
-
-            isPlaying = true;
-            const data = audioQueue.shift();
-            const buffer = audioContext.createBuffer(1, data.length, 24000);
-            buffer.getChannelData(0).set(data);
-
-            const source = audioContext.createBufferSource();
-            source.buffer = buffer;
-            source.connect(audioContext.destination);
-            source.onended = () => processAudioQueue();
-            source.start();
         }
 
         function stopAllAudio() {
             audioQueue.length = 0;
-            // In a real app we'd stop the current source, but for simplicity we just clear the queue
+            nextStartTime = 0;
+            // Para detener realmente el audio actual necesitaríamos trackear los nodos source
         }
 
         function endVoiceCall() {
