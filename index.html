@@ -1,55 +1,699 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Empanadas Creativas | Sabores de Colombia</title>
+    
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            colors: {
-              coffee: {
-                900: '#1A0F0A',
-                800: '#2D1B13',
-                700: '#3E2723',
-                600: '#5D4037',
-                500: '#795548',
-                50: '#FDFCFB',
-              },
-              gold: {
-                500: '#D4AF37',
-                400: '#F1C40F',
-                600: '#B8860B',
-              }
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        coffee: {
+                            900: '#1A0F0A',
+                            800: '#2D1B13',
+                            700: '#3E2723',
+                            600: '#5D4037',
+                            500: '#795548',
+                            50: '#FDFCFB',
+                        },
+                        gold: {
+                            500: '#D4AF37',
+                            400: '#F1C40F',
+                            600: '#B8860B',
+                        }
+                    },
+                    fontFamily: {
+                        serif: ['"Playfair Display"', 'serif'],
+                        sans: ['"Lato"', 'sans-serif'],
+                    },
+                },
             },
-            fontFamily: {
-              serif: ['"Playfair Display"', 'serif'],
-              sans: ['"Lato"', 'sans-serif'],
-            },
-          },
-        },
-      }
+        }
     </script>
+
+    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700;900&family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&display=swap" rel="stylesheet">
-    <script type="importmap">
-    {
-      "imports": {
-        "react": "https://esm.sh/react@19.0.0",
-        "react/": "https://esm.sh/react@19.0.0/",
-        "react-dom": "https://esm.sh/react-dom@19.0.0",
-        "react-dom/": "https://esm.sh/react-dom@19.0.0/",
-        "react-dom/client": "https://esm.sh/react-dom@19.0.0/client",
-        "framer-motion": "https://esm.sh/framer-motion@12.31.0?external=react,react-dom",
-        "lucide-react": "https://esm.sh/lucide-react@0.463.0?external=react,react-dom",
-        "@google/genai": "https://esm.sh/@google/genai@1.39.0"
-      }
-    }
+    
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <style>
+        body {
+            background-color: #1A0F0A;
+            color: white;
+            overflow: hidden;
+            margin: 0;
+            font-family: 'Lato', sans-serif;
+        }
+
+        .slide-container {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            overflow: hidden;
+        }
+
+        .slide {
+            position: absolute;
+            inset: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0;
+            transition: opacity 1s ease-in-out;
+            z-index: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .slide.active {
+            opacity: 1;
+            z-index: 10;
+        }
+
+        .slide-bg {
+            position: absolute;
+            inset: 0;
+            z-index: -1;
+            background-size: cover;
+            background-position: center;
+            transform: scale(1.1);
+            transition: transform 1.5s ease-out;
+        }
+
+        .slide.active .slide-bg {
+            transform: scale(1.05);
+        }
+
+        .slide-overlay {
+            position: absolute;
+            inset: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 0;
+        }
+
+        .slide-content {
+            position: relative;
+            z-index: 20;
+            width: 100%;
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 0 1.5rem;
+            display: flex;
+            flex-direction: column;
+            transition: transform 0.8s ease-out, opacity 0.8s ease-out;
+            opacity: 0;
+            transform: translateY(20px);
+        }
+
+        .slide.active .slide-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #2D1B13;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #D4AF37;
+            border-radius: 10px;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(10px); }
+        }
+
+        .animate-float {
+            animation: float 2s infinite ease-in-out;
+        }
+
+        /* Pagination dots */
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.3);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .dot.active {
+            background: #D4AF37;
+            transform: scale(1.25);
+        }
+
+        /* Chat styles */
+        #chat-window {
+            transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s ease;
+        }
+        #chat-window.hidden {
+            transform: translateY(100px) scale(0.9);
+            opacity: 0;
+            pointer-events: none;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Navbar -->
+    <nav class="fixed top-0 left-0 w-full z-50 px-6 py-4 md:px-12 flex justify-between items-center text-white bg-gradient-to-b from-coffee-900/90 to-transparent transition-all duration-300">
+        <div class="flex items-center">
+            <img src="https://drive.google.com/uc?export=view&id=1XS6MzCab3kxlDaEvRxynPOfE6nEFpYkL" alt="Logo Principal" class="h-16 md:h-24 w-auto object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-300 cursor-pointer">
+        </div>
+        
+        <div class="hidden md:flex gap-8 text-sm font-bold tracking-widest uppercase items-center drop-shadow-md">
+            <a href="#" class="hover:text-gold-500 transition-colors">Menú</a>
+            <a href="#" class="hover:text-gold-500 transition-colors">Sabores</a>
+            <a href="#" class="hover:text-gold-500 transition-colors">Catering</a>
+            <a href="#" class="hover:text-gold-500 transition-colors">Contacto</a>
+        </div>
+
+        <div class="flex items-center gap-6">
+            <button class="hidden md:block font-bold drop-shadow-md">ES / EN</button>
+            <i data-lucide="shopping-bag" class="w-6 h-6 cursor-pointer hover:text-gold-500 transition-colors drop-shadow-md"></i>
+            <i data-lucide="menu" class="w-6 h-6 md:hidden cursor-pointer drop-shadow-md"></i>
+        </div>
+    </nav>
+
+    <!-- Main Slide Area -->
+    <div id="slide-container" class="slide-container">
+        <!-- Slides will be injected here -->
+    </div>
+
+    <!-- Pagination Dots -->
+    <div id="pagination" class="fixed right-6 top-1/2 transform -translate-y-1/2 z-40 flex flex-col gap-4">
+        <!-- Dots will be injected here -->
+    </div>
+
+    <!-- Scroll Indicator -->
+    <div id="scroll-indicator" class="fixed bottom-16 left-1/2 transform -translate-x-1/2 z-40 text-white/50 flex flex-col items-center gap-2 transition-opacity duration-500">
+        <span class="text-xs uppercase tracking-widest">Descubrir</span>
+        <div class="animate-float">
+            <i data-lucide="chevron-down" class="w-6 h-6"></i>
+        </div>
+    </div>
+
+    <!-- Developer Footer -->
+    <div class="fixed bottom-4 left-6 z-40 flex items-center gap-3 group">
+        <div class="flex flex-col items-start transition-opacity duration-300 opacity-60 group-hover:opacity-100">
+            <span class="text-[10px] uppercase tracking-[0.2em] text-white/50">Developed by</span>
+            <span class="text-xs font-bold text-white tracking-wider">Jose Jorge Muñoz M.</span>
+        </div>
+        <img src="https://hvekecuybruzwpjusnkp.supabase.co/storage/v1/object/public/Imagenes/LogoDeveloper.svg" alt="Developer Logo" class="w-8 h-8 object-contain filter brightness-0 invert opacity-40 group-hover:opacity-100 transition-all duration-300">
+    </div>
+
+    <!-- Progress Bar -->
+    <div id="progress-bar" class="fixed bottom-0 left-0 h-1 bg-gold-500 z-50 transition-all duration-1000 ease-out" style="width: 0%"></div>
+
+    <!-- AI Chat Button -->
+    <div class="fixed bottom-8 right-8 z-50 flex flex-col gap-4">
+        <button id="voice-toggle" class="p-4 rounded-full shadow-2xl bg-white text-coffee-900 hover:scale-110 transition-all duration-300 border-2 border-gold-500">
+            <i data-lucide="phone" class="w-6 h-6"></i>
+        </button>
+        <button id="chat-toggle" class="p-4 rounded-full shadow-2xl bg-gold-500 text-coffee-900 hover:scale-110 transition-all duration-300">
+            <i data-lucide="sparkles" class="w-6 h-6"></i>
+        </button>
+    </div>
+
+    <!-- Voice Call Overlay -->
+    <div id="voice-overlay" class="hidden fixed inset-0 z-[60] bg-coffee-900/95 backdrop-blur-xl flex flex-col items-center justify-center text-white">
+        <div class="relative w-64 h-64 flex items-center justify-center">
+            <div id="voice-visualizer" class="absolute inset-0 border-4 border-gold-500/30 rounded-full animate-pulse"></div>
+            <div class="absolute inset-4 border-2 border-gold-500/50 rounded-full animate-ping" style="animation-duration: 3s"></div>
+            <div class="z-10 bg-gold-500 p-8 rounded-full text-coffee-900 shadow-[0_0_50px_rgba(212,175,55,0.4)]">
+                <i data-lucide="mic" class="w-12 h-12"></i>
+            </div>
+        </div>
+        
+        <div class="mt-12 text-center">
+            <h2 class="font-serif text-4xl text-gold-500 mb-2">Sarah</h2>
+            <p class="text-coffee-300 tracking-widest uppercase text-xs">Asistente Profesional • En línea</p>
+            <div id="voice-status" class="mt-4 text-sm text-gold-500/80 italic">Conectando...</div>
+        </div>
+
+        <button id="voice-end" class="mt-16 p-6 rounded-full bg-red-500 text-white hover:bg-red-600 hover:scale-110 transition-all duration-300 shadow-xl">
+            <i data-lucide="phone-off" class="w-8 h-8"></i>
+        </button>
+    </div>
+
+    <!-- AI Chat Window -->
+    <div id="chat-window" class="hidden fixed bottom-4 right-4 md:bottom-8 md:right-8 z-50 w-[90vw] md:w-[400px] h-[500px] bg-coffee-900/95 backdrop-blur-md border border-gold-500/30 rounded-2xl shadow-2xl flex flex-col overflow-hidden">
+        <div class="bg-coffee-800 p-4 flex justify-between items-center border-b border-gold-500/20">
+            <div class="flex items-center gap-2">
+                <i data-lucide="utensils" class="w-5 h-5 text-gold-500"></i>
+                <h3 class="font-serif text-lg text-gold-500">Empanada Sommelier AI</h3>
+            </div>
+            <button id="chat-close" class="text-coffee-200 hover:text-white transition-colors">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+        </div>
+
+        <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-4 custom-scrollbar">
+            <div class="flex justify-start">
+                <div class="max-w-[80%] p-3 rounded-xl text-sm leading-relaxed bg-coffee-800 text-coffee-100 border border-coffee-700 rounded-bl-none">
+                    ¡Hola! Soy tu Sommelier de Empanadas Creativas. ¿Buscas el maridaje perfecto o quieres conocer nuestro menú gourmet?
+                </div>
+            </div>
+        </div>
+
+        <div class="p-4 bg-coffee-800/50 border-t border-gold-500/20">
+            <div class="flex gap-2">
+                <input id="chat-input" type="text" placeholder="Ej: ¿Qué salsa me recomiendas para carne?" class="flex-1 bg-coffee-900 border border-coffee-600 rounded-lg px-4 py-2 text-sm text-white focus:outline-none focus:border-gold-500 transition-colors placeholder-coffee-400">
+                <button id="chat-send" class="bg-gold-500 hover:bg-gold-400 disabled:opacity-50 text-coffee-900 p-2 rounded-lg transition-colors">
+                    <i data-lucide="send" class="w-5 h-5"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module">
+        import { GoogleGenAI } from "https://esm.sh/@google/genai@1.39.0";
+
+        const SLIDES = [
+            {
+                id: 1,
+                title: "Empanadas Creativas",
+                subtitle: "El Sabor de la Innovación",
+                description: "Redefinimos el icono de la gastronomía colombiana. Masas artesanales, rellenos gourmet y una experiencia que deleita todos los sentidos.",
+                image: "https://images.unsplash.com/photo-1628102476629-f8c331bc5099?q=80&w=2070&auto=format&fit=crop", 
+                align: 'center',
+                cta: "Explorar Sabores"
+            },
+            {
+                id: 2,
+                title: "Masas de Autor",
+                subtitle: "Maíz, Trigo y Semillas",
+                description: "Desde la tradicional masa de maíz peto hasta innovaciones con chía, linaza y remolacha. Una textura crujiente por fuera y suave por dentro.",
+                image: "https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=2069&auto=format&fit=crop", 
+                align: 'left'
+            },
+            {
+                id: 3,
+                title: "Rellenos Infinitos",
+                subtitle: "Gourmet en Cada Bocado",
+                description: "Carne desmechada al fuego lento, pollo en crema de champiñones, o nuestras opciones vegetarianas con quinoa y vegetales rostizados.",
+                image: "https://images.unsplash.com/photo-1626082927389-6cd097cdc6ec?q=80&w=2070&auto=format&fit=crop", 
+                align: 'right'
+            },
+            {
+                id: 4,
+                title: "Catering de Lujo",
+                subtitle: "Tu Evento, Nuestro Sabor",
+                description: "Llevamos la estación de empanadas más creativa de Colombia a tus eventos corporativos y celebraciones privadas. Un toque chic y delicioso.",
+                image: "https://images.unsplash.com/photo-1555244162-803834f70033?q=80&w=2070&auto=format&fit=crop", 
+                align: 'left'
+            },
+            {
+                id: 5,
+                title: "Sommelier de Sabores",
+                subtitle: "Asesoría Gastronómica IA",
+                description: "¿No sabes con qué salsa combinar tu empanada? Nuestra IA experta te sugiere el maridaje perfecto para una experiencia completa.",
+                image: "https://images.unsplash.com/photo-1608198093002-ad4e005484ec?q=80&w=2070&auto=format&fit=crop", 
+                align: 'center',
+                cta: "Consultar Sommelier"
+            }
+        ];
+
+        const SYSTEM_INSTRUCTION = `
+            Eres 'CreativaBot', un sommelier experto en empanadas de la marca 'Empanadas Creativas'.
+            Tu tono es entusiasta, profesional, sofisticado y muy colombiano.
+            Empanadas Creativas ofrece empanadas gourmet con masas innovadoras (maíz, semillas, remolacha) y rellenos de alta cocina.
+
+            Debes responder preguntas sobre:
+            - Maridajes: Qué salsas (ají artesanal, suero costeño, chimichurri de la casa) van mejor con cada relleno.
+            - Recomendaciones para eventos y catering.
+            - Detalles sobre los tipos de masas artesanales.
+
+            Mantén las respuestas concisas (máximo 80 palabras), apetitosas y elegantes.
+        `;
+
+        const VOICE_SYSTEM_INSTRUCTION = `
+            Eres 'Sarah', la asistente profesional de 'Empanadas Creativas'. 
+            Tu voz es joven, suave y elegante. Hablas con un marcado pero refinado acento colombiano.
+            Eres experta en el menú de Empanadas Creativas y en maridajes gourmet.
+            Tu objetivo es brindar una experiencia de lujo a través de la voz, con un tono fresco y acogedor.
+            Responde de forma natural, cálida y profesional.
+            Si el usuario pregunta quién eres, preséntate como Sarah, la asistente profesional de la casa.
+        `;
+
+        let currentSlide = 0;
+        let isScrolling = false;
+
+        const slideContainer = document.getElementById('slide-container');
+        const pagination = document.getElementById('pagination');
+        const progressBar = document.getElementById('progress-bar');
+        const scrollIndicator = document.getElementById('scroll-indicator');
+
+        // Initialize Slides
+        function initSlides() {
+            SLIDES.forEach((slide, index) => {
+                const slideEl = document.createElement('div');
+                slideEl.className = `slide ${index === 0 ? 'active' : ''}`;
+                slideEl.id = `slide-${index}`;
+                
+                const alignClass = slide.align === 'left' ? 'items-start text-left md:pl-24' : 
+                                  slide.align === 'right' ? 'items-end text-right md:pr-24' : 
+                                  'items-center text-center';
+                
+                const lineAlign = slide.align === 'center' ? 'mx-auto' : slide.align === 'right' ? 'ml-auto' : '';
+
+                slideEl.innerHTML = `
+                    <div class="slide-bg" style="background-image: url('${slide.image}')"></div>
+                    <div class="slide-overlay"></div>
+                    <div class="slide-content ${alignClass}">
+                        <h3 class="text-gold-500 tracking-[0.2em] text-sm md:text-base font-bold uppercase mb-4">${slide.subtitle}</h3>
+                        <h1 class="font-serif text-5xl md:text-7xl lg:text-8xl text-white mb-6 leading-tight drop-shadow-2xl">${slide.title}</h1>
+                        <div class="h-1 bg-gold-500 mb-8 w-24 ${lineAlign}"></div>
+                        <p class="font-sans text-lg md:text-xl text-coffee-50 max-w-xl leading-relaxed drop-shadow-md">${slide.description}</p>
+                        ${slide.cta ? `
+                            <button class="mt-10 group relative px-8 py-3 bg-transparent border border-gold-500/50 text-white overflow-hidden rounded-full hover:bg-gold-500 hover:text-coffee-900 transition-all duration-300">
+                                <span class="relative flex items-center gap-3 font-bold tracking-wider">
+                                    ${slide.cta} <i data-lucide="arrow-right" class="w-4 h-4"></i>
+                                </span>
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+                slideContainer.appendChild(slideEl);
+
+                // Dots
+                const dot = document.createElement('div');
+                dot.className = `dot ${index === 0 ? 'active' : ''}`;
+                dot.onclick = () => goToSlide(index);
+                pagination.appendChild(dot);
+            });
+            lucide.createIcons();
+        }
+
+        function goToSlide(index) {
+            if (index < 0 || index >= SLIDES.length) return;
+            
+            document.querySelectorAll('.slide').forEach(s => s.classList.remove('active'));
+            document.querySelectorAll('.dot').forEach(d => d.classList.remove('active'));
+            
+            currentSlide = index;
+            document.getElementById(`slide-${index}`).classList.add('active');
+            pagination.children[index].classList.add('active');
+            
+            progressBar.style.width = `${((index + 1) / SLIDES.length) * 100}%`;
+            
+            if (index === 0) {
+                scrollIndicator.style.opacity = '1';
+            } else {
+                scrollIndicator.style.opacity = '0';
+            }
+        }
+
+        // Scroll Handling
+        window.addEventListener('wheel', (e) => {
+            if (isScrolling) return;
+            if (Math.abs(e.deltaY) < 30) return;
+
+            if (e.deltaY > 0) {
+                if (currentSlide < SLIDES.length - 1) {
+                    isScrolling = true;
+                    goToSlide(currentSlide + 1);
+                    setTimeout(() => isScrolling = false, 1200);
+                }
+            } else {
+                if (currentSlide > 0) {
+                    isScrolling = true;
+                    goToSlide(currentSlide - 1);
+                    setTimeout(() => isScrolling = false, 1200);
+                }
+            }
+        });
+
+        window.addEventListener('keydown', (e) => {
+            if (e.key === 'ArrowDown') goToSlide(currentSlide + 1);
+            if (e.key === 'ArrowUp') goToSlide(currentSlide - 1);
+        });
+
+        // AI Chat Logic
+        const chatToggle = document.getElementById('chat-toggle');
+        const chatWindow = document.getElementById('chat-window');
+        const chatClose = document.getElementById('chat-close');
+        const chatMessages = document.getElementById('chat-messages');
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+
+        chatToggle.onclick = () => {
+            chatWindow.classList.remove('hidden');
+            chatToggle.style.opacity = '0';
+            chatToggle.style.pointerEvents = 'none';
+        };
+
+        chatClose.onclick = () => {
+            chatWindow.classList.add('hidden');
+            chatToggle.style.opacity = '1';
+            chatToggle.style.pointerEvents = 'auto';
+        };
+
+        async function sendMessage() {
+            const text = chatInput.value.trim();
+            if (!text) return;
+
+            // User Message
+            addMessage('user', text);
+            chatInput.value = '';
+            
+            // Loading
+            const loadingId = addLoading();
+            
+            try {
+                const apiKey = process.env.GEMINI_API_KEY || "";
+                const ai = new GoogleGenAI({ apiKey });
+                const response = await ai.models.generateContent({
+                    model: "gemini-3-flash-preview",
+                    contents: text,
+                    config: {
+                        systemInstruction: SYSTEM_INSTRUCTION,
+                    },
+                });
+
+                removeLoading(loadingId);
+                addMessage('model', response.text || "No logré procesar esa idea, ¿me la repites?");
+            } catch (error) {
+                console.error(error);
+                removeLoading(loadingId);
+                addMessage('model', "¡Qué pena! Tuvimos un pequeño percance. ¿Podrías intentar de nuevo?");
+            }
+        }
+
+        function addMessage(role, text) {
+            const msgEl = document.createElement('div');
+            msgEl.className = `flex ${role === 'user' ? 'justify-end' : 'justify-start'}`;
+            msgEl.innerHTML = `
+                <div class="max-w-[80%] p-3 rounded-xl text-sm leading-relaxed ${
+                    role === 'user'
+                        ? 'bg-gold-500 text-coffee-900 rounded-br-none'
+                        : 'bg-coffee-800 text-coffee-100 border border-coffee-700 rounded-bl-none'
+                }">
+                    ${text}
+                </div>
+            `;
+            chatMessages.appendChild(msgEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function addLoading() {
+            const id = 'loading-' + Date.now();
+            const msgEl = document.createElement('div');
+            msgEl.id = id;
+            msgEl.className = 'flex justify-start';
+            msgEl.innerHTML = `
+                <div class="bg-coffee-800 p-3 rounded-xl rounded-bl-none flex gap-2 items-center">
+                    <i data-lucide="loader-2" class="w-4 h-4 animate-spin text-gold-500"></i>
+                    <span class="text-xs text-coffee-300">Cocinando respuesta...</span>
+                </div>
+            `;
+            chatMessages.appendChild(msgEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+            lucide.createIcons();
+            return id;
+        }
+
+        function removeLoading(id) {
+            const el = document.getElementById(id);
+            if (el) el.remove();
+        }
+
+        chatSend.onclick = sendMessage;
+        chatInput.onkeydown = (e) => { if (e.key === 'Enter') sendMessage(); };
+
+        // Voice Call Logic
+        const voiceToggle = document.getElementById('voice-toggle');
+        const voiceOverlay = document.getElementById('voice-overlay');
+        const voiceEnd = document.getElementById('voice-end');
+        const voiceStatus = document.getElementById('voice-status');
+        const voiceVisualizer = document.getElementById('voice-visualizer');
+
+        let liveSession = null;
+        let audioContext = null;
+        let audioWorkletNode = null;
+        let microphoneStream = null;
+
+        async function startVoiceCall() {
+            voiceOverlay.classList.remove('hidden');
+            voiceStatus.innerText = "Iniciando llamada...";
+            
+            try {
+                const apiKey = process.env.GEMINI_API_KEY || "";
+                const ai = new GoogleGenAI({ apiKey });
+
+                audioContext = new (window.AudioContext || window.webkitAudioContext)({ sampleRate: 16000 });
+                
+                liveSession = await ai.live.connect({
+                    model: "gemini-2.5-flash-native-audio-preview-12-2025",
+                    config: {
+                        systemInstruction: VOICE_SYSTEM_INSTRUCTION,
+                        responseModalities: ["AUDIO"],
+                        speechConfig: {
+                            voiceConfig: { prebuiltVoiceConfig: { voiceName: "Puck" } }
+                        }
+                    },
+                    callbacks: {
+                        onopen: async () => {
+                            voiceStatus.innerText = "Sarah está escuchando...";
+                            await setupMicrophone();
+                        },
+                        onmessage: async (message) => {
+                            if (message.serverContent?.modelTurn?.parts?.[0]?.inlineData?.data) {
+                                const base64Audio = message.serverContent.modelTurn.parts[0].inlineData.data;
+                                playAudioChunk(base64Audio);
+                            }
+                            if (message.serverContent?.interrupted) {
+                                stopAllAudio();
+                            }
+                        },
+                        onclose: () => endVoiceCall(),
+                        onerror: (err) => {
+                            console.error(err);
+                            voiceStatus.innerText = "Error en la conexión";
+                            setTimeout(endVoiceCall, 2000);
+                        }
+                    }
+                });
+
+            } catch (error) {
+                console.error(error);
+                voiceStatus.innerText = "No se pudo conectar";
+                setTimeout(endVoiceCall, 2000);
+            }
+        }
+
+        async function setupMicrophone() {
+            try {
+                microphoneStream = await navigator.mediaDevices.getUserMedia({ audio: true });
+                const source = audioContext.createMediaStreamSource(microphoneStream);
+                
+                // Simple script processor for PCM 16bit 16kHz
+                const processor = audioContext.createScriptProcessor(4096, 1, 1);
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+
+                processor.onaudioprocess = (e) => {
+                    if (!liveSession) return;
+                    const inputData = e.inputBuffer.getChannelData(0);
+                    
+                    // Convert Float32 to Int16
+                    const pcmData = new Int16Array(inputData.length);
+                    for (let i = 0; i < inputData.length; i++) {
+                        pcmData[i] = Math.max(-1, Math.min(1, inputData[i])) * 0x7FFF;
+                    }
+                    
+                    // Convert to Base64
+                    const base64Data = btoa(String.fromCharCode(...new Uint8Array(pcmData.buffer)));
+                    liveSession.sendRealtimeInput({
+                        audio: { data: base64Data, mimeType: 'audio/pcm;rate=16000' }
+                    });
+
+                    // Visualizer effect
+                    const volume = inputData.reduce((a, b) => a + Math.abs(b), 0) / inputData.length;
+                    voiceVisualizer.style.transform = `scale(${1 + volume * 5})`;
+                };
+            } catch (err) {
+                console.error("Microphone error:", err);
+                voiceStatus.innerText = "Error de micrófono";
+            }
+        }
+
+        const audioQueue = [];
+        let isPlaying = false;
+
+        function playAudioChunk(base64Data) {
+            const binaryString = atob(base64Data);
+            const bytes = new Uint8Array(binaryString.length);
+            for (let i = 0; i < binaryString.length; i++) {
+                bytes[i] = binaryString.charCodeAt(i);
+            }
+            const pcmData = new Int16Array(bytes.buffer);
+            
+            // Convert Int16 to Float32
+            const floatData = new Float32Array(pcmData.length);
+            for (let i = 0; i < pcmData.length; i++) {
+                floatData[i] = pcmData[i] / 0x7FFF;
+            }
+
+            audioQueue.push(floatData);
+            if (!isPlaying) processAudioQueue();
+        }
+
+        async function processAudioQueue() {
+            if (audioQueue.length === 0) {
+                isPlaying = false;
+                return;
+            }
+
+            isPlaying = true;
+            const data = audioQueue.shift();
+            const buffer = audioContext.createBuffer(1, data.length, 16000);
+            buffer.getChannelData(0).set(data);
+
+            const source = audioContext.createBufferSource();
+            source.buffer = buffer;
+            source.connect(audioContext.destination);
+            source.onended = () => processAudioQueue();
+            source.start();
+        }
+
+        function stopAllAudio() {
+            audioQueue.length = 0;
+            // In a real app we'd stop the current source, but for simplicity we just clear the queue
+        }
+
+        function endVoiceCall() {
+            if (liveSession) {
+                liveSession.close();
+                liveSession = null;
+            }
+            if (microphoneStream) {
+                microphoneStream.getTracks().forEach(track => track.stop());
+                microphoneStream = null;
+            }
+            if (audioContext) {
+                audioContext.close();
+                audioContext = null;
+            }
+            voiceOverlay.classList.add('hidden');
+        }
+
+        voiceToggle.onclick = startVoiceCall;
+        voiceEnd.onclick = endVoiceCall;
+
+        // Init
+        initSlides();
+        goToSlide(0);
+        lucide.createIcons();
     </script>
-  </head>
-  <body class="bg-coffee-900 text-white overflow-hidden">
-    <div id="root"></div>
-    <script type="module" src="./index.tsx"></script>
-  </body>
+</body>
 </html>

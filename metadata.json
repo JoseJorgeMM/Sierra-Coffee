@@ -1,5 +1,5 @@
 {
   "name": "Empanadas Creativas - Arte en Masa",
   "description": "Sitio web premium para Empanadas Creativas, destacando sabores auténticos y catering de lujo en Colombia.",
-  "requestFramePermissions": []
+  "requestFramePermissions": ["microphone"]
 }
